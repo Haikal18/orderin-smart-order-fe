@@ -3,18 +3,21 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { DashboardNavbar } from '@/components/dashboard/DashboardNavbar';
 import { TableStatusLegend } from '@/components/dashboard/TableStatusLegend';
 import { TableFloorPlan } from '@/components/dashboard/TableFloorPlan';
 import { TableListView } from '@/components/dashboard/TableListView';
 import { QuickStats } from '@/components/dashboard/QuickStats';
 import { useTables } from '@/hooks/meja-tersedia/useMeja';
 import { Table } from '@/types/meja-tersedia/meja.types';
+import { useNavbarSearch } from '@/context/navbarSearch';
 
 export default function DashboardPage() {
-    const [searchQuery, setSearchQuery] = useState('');
+    // Use shared navbar search state from context
+    const navbarSearch = useNavbarSearch();
+    const searchQuery = navbarSearch?.searchQuery ?? '';
+    const setSearchQuery = navbarSearch?.setSearchQuery ?? (() => {});
+
     const [viewMode, setViewMode] = useState<'floor' | 'list'>('floor');
-    
 
     const { data: tablesResponse, isLoading, isError, error } = useTables();
     const tables = tablesResponse?.data || [];
@@ -27,7 +30,6 @@ export default function DashboardPage() {
     if (isLoading) {
         return (
             <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900">
-                <DashboardNavbar searchQuery={searchQuery} onSearchChange={setSearchQuery} />
                 <div className="flex items-center justify-center min-h-[50vh]">
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-slate-900"></div>
                 </div>
@@ -38,7 +40,6 @@ export default function DashboardPage() {
     if (isError) {
         return (
             <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900">
-                <DashboardNavbar searchQuery={searchQuery} onSearchChange={setSearchQuery} />
                 <div className="flex items-center justify-center min-h-[50vh]">
                     <div className="text-red-500 font-bold bg-red-100 p-4 rounded-lg">
                         Error: {(error as Error).message}
@@ -50,10 +51,6 @@ export default function DashboardPage() {
 
     return (
         <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900">
-            <DashboardNavbar 
-                searchQuery={searchQuery}
-                onSearchChange={setSearchQuery}
-            />
 
             <main className="p-4 md:p-6">
                 <div className="max-w-7xl mx-auto">
@@ -106,5 +103,5 @@ export default function DashboardPage() {
                 </div>
             </main>
         </div>
-    );
+    ); 
 }
