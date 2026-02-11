@@ -5,6 +5,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
+import { SidebarTrigger } from '@/components/ui/sidebar';
+import { useNavbarSearch } from '@/context/navbarSearch';
 
 interface DashboardNavbarProps {
     searchQuery?: string;
@@ -21,6 +23,10 @@ export const DashboardNavbar = ({
     const [showMobileSearch, setShowMobileSearch] = useState(false);
     const searchRef = useRef<HTMLDivElement | null>(null);
 
+    const navbarSearch = useNavbarSearch();
+    const resolvedSearchQuery = searchQuery ?? navbarSearch?.searchQuery ?? '';
+    const resolvedOnSearchChange = onSearchChange ?? navbarSearch?.setSearchQuery;
+
     useEffect(() => {
         const onClick = (e: MouseEvent) => {
             if (showMobileSearch && searchRef.current && !searchRef.current.contains(e.target as Node)) {
@@ -35,19 +41,21 @@ export const DashboardNavbar = ({
         <header className="sticky top-0 z-40 backdrop-blur-sm bg-white/90 dark:bg-zinc-950/90 border-b shadow-sm px-4 md:px-6 py-3 md:py-4">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 md:gap-4">
+                    <SidebarTrigger />
+
                     <div className="bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-3 py-1 rounded font-bold text-sm md:text-base">
                         RestaurantPOS
                     </div>
 
-                    {showSearch && onSearchChange && (
+                    {showSearch && resolvedOnSearchChange && (
                         <div className="relative" ref={searchRef}>
                             {/* Desktop */}
                             <div className="hidden md:block">
                                 <Input
                                     type="search"
                                     placeholder="Search table..."
-                                    value={searchQuery}
-                                    onChange={(e) => onSearchChange(e.target.value)}
+                                    value={resolvedSearchQuery}
+                                    onChange={(e) => resolvedOnSearchChange(e.target.value)}
                                     className="w-64"
                                 />
                             </div>
@@ -67,8 +75,8 @@ export const DashboardNavbar = ({
                                         <Input
                                             type="search"
                                             placeholder="Search table..."
-                                            value={searchQuery}
-                                            onChange={(e) => onSearchChange(e.target.value)}
+                                            value={resolvedSearchQuery}
+                                            onChange={(e) => resolvedOnSearchChange(e.target.value)}
                                             className="w-full"
                                         />
                                     </div>
@@ -76,7 +84,7 @@ export const DashboardNavbar = ({
                             </div>
                         </div>
                     )}
-                </div>
+                </div> 
 
                 <div className="flex items-center gap-3">
                     <div className="text-sm flex flex-col items-end">
