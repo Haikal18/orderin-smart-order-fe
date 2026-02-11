@@ -1,14 +1,11 @@
-/**
- * useAuth Hook
- * Custom hook untuk mengelola authentication state dan actions
- */
-
 'use client';
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import { LoginRequest, User } from '@/types/auth/auth.types';
 import { authService } from '@/services/auth.service';
 import { isAuthenticated as checkAuth, removeToken } from '@/lib/token';
+import { getUser, removeUser } from '@/lib/user';
 
 interface UseAuthReturn {
   user: User | null;
@@ -20,60 +17,59 @@ interface UseAuthReturn {
   refetchUser: () => Promise<void>;
 }
 
-/**
- * Custom hook untuk authentication menggunakan React Query
- * @returns Object dengan state dan functions untuk auth
- */
 export const useAuth = (): UseAuthReturn => {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
-  // Query untuk mendapatkan current user
   const { data: user, isLoading, error, refetch } = useQuery({
     queryKey: ['user'],
     queryFn: async () => {
       try {
+        const cachedUser = getUser();
+        if (cachedUser) {
+          return cachedUser;
+        }
+        
         return await authService.getCurrentUser();
       } catch (err: any) {
-        // Jika error 401/403 (Unauthorized/Forbidden), jangan lempar error query
-        // tapi kembalikan null agar user dianggap tidak login
         if (err?.response?.status === 401 || err?.response?.status === 403) {
           removeToken();
+          removeUser();
           return null;
         }
         throw err;
       }
     },
-    // Hanya fetch jika ada token di storage
+
     enabled: checkAuth(),
-    retry: false, // Jangan retry jika gagal (terutama auth error)
-    staleTime: 5 * 60 * 1000, // Data user dianggap fresh selama 5 menit
+    retry: false, 
+    staleTime: 5 * 60 * 1000, 
   });
 
-  /**
-   * Login function
-   */
+
   const login = async (credentials: LoginRequest) => {
     try {
       const response = await authService.login(credentials);
-      // Update cache user dengan data dari response login
-      queryClient.setQueryData(['user'], response.user);
+
+      queryClient.setQueryData(['user'], response.data);
     } catch (err) {
       throw err;
     }
   };
 
-  /**
-   * Logout function
-   */
+
   const logout = async () => {
     try {
       await authService.logout();
     } catch (err) {
       console.error('Logout error:', err);
     } finally {
-      // Hapus data user dari cache dan clear token
       queryClient.setQueryData(['user'], null);
       removeToken();
+      removeUser();
+
+
+      router.replace('/');
     }
   };
 

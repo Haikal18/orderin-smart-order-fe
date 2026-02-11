@@ -1,81 +1,61 @@
 'use client';
 
 import { useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-
-type TableStatus = 'available' | 'occupied' | 'reserved' | 'inactive';
-
-interface Table {
-    id: number;
-    status: TableStatus;
-}
+import { DashboardNavbar } from '@/components/dashboard/DashboardNavbar';
+import { TableStatusLegend } from '@/components/dashboard/TableStatusLegend';
+import { TableFloorPlan } from '@/components/dashboard/TableFloorPlan';
+import { TableListView } from '@/components/dashboard/TableListView';
+import { QuickStats } from '@/components/dashboard/QuickStats';
+import { useTables } from '@/hooks/meja-tersedia/useMeja';
+import { Table } from '@/types/meja-tersedia/meja.types';
 
 export default function DashboardPage() {
-    const { user, logout } = useAuth();
     const [searchQuery, setSearchQuery] = useState('');
     const [viewMode, setViewMode] = useState<'floor' | 'list'>('floor');
+    
 
-    const tables: Table[] = Array.from({ length: 24 }, (_, i) => ({
-        id: i + 1,
-        status: i < 12 ? 'available' : i < 20 ? 'occupied' : i < 23 ? 'reserved' : 'inactive',
-    }));
+    const { data: tablesResponse, isLoading, isError, error } = useTables();
+    const tables = tablesResponse?.data || [];
 
-    const stats = {
-        available: tables.filter(t => t.status === 'available').length,
-        occupied: tables.filter(t => t.status === 'occupied').length,
-        reserved: tables.filter(t => t.status === 'reserved').length,
-        inactive: tables.filter(t => t.status === 'inactive').length,
+    const handleTableClick = (table: Table) => {
+        console.log('Table clicked:', table);
+
     };
 
-    const getTableColor = (status: TableStatus) => {
-        switch (status) {
-            case 'available':
-                return 'bg-slate-500 hover:bg-slate-600';
-            case 'occupied':
-                return 'bg-slate-700 hover:bg-slate-800';
-            case 'reserved':
-                return 'bg-slate-600 hover:bg-slate-700';
-            case 'inactive':
-                return 'bg-slate-400 hover:bg-slate-500';
-            default:
-                return 'bg-slate-500';
-        }
-    };
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900">
+                <DashboardNavbar searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+                <div className="flex items-center justify-center min-h-[50vh]">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-slate-900"></div>
+                </div>
+            </div>
+        );
+    }
+
+    if (isError) {
+        return (
+            <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900">
+                <DashboardNavbar searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+                <div className="flex items-center justify-center min-h-[50vh]">
+                    <div className="text-red-500 font-bold bg-red-100 p-4 rounded-lg">
+                        Error: {(error as Error).message}
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900">
-            <header className="border-b bg-white dark:bg-zinc-950 px-6 py-4">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <div className="bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-4 py-2 rounded font-bold">
-                            RestaurantPOS
-                        </div>
-                        <div className="relative">
-                            <Input
-                                type="search"
-                                placeholder="Search table..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-64"
-                            />
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <div className="text-sm">
-                            <div className="font-medium">{user?.name || 'Server'}</div>
-                            <div className="text-zinc-500">{user?.role || 'Server'}</div>
-                        </div>
-                        <Button variant="outline" onClick={logout} size="sm">
-                            Logout
-                        </Button>
-                    </div>
-                </div>
-            </header>
+            <DashboardNavbar 
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+            />
 
-            <main className="p-6">
+            <main className="p-4 md:p-6">
                 <div className="max-w-7xl mx-auto">
                     <Card>
                         <CardHeader>
@@ -100,70 +80,25 @@ export default function DashboardPage() {
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <div className="mb-6">
-                                <div className="text-sm font-medium mb-2">Table Status</div>
-                                <div className="flex gap-4 text-sm">
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-4 h-4 rounded bg-slate-500"></div>
-                                        <span>Available</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-4 h-4 rounded bg-slate-700"></div>
-                                        <span>Occupied</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-4 h-4 rounded bg-slate-600"></div>
-                                        <span>Reserved</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-4 h-4 rounded bg-slate-400"></div>
-                                        <span>Inactive</span>
-                                    </div>
-                                </div>
-                            </div>
+                            <TableStatusLegend />
 
-                            <div className="grid grid-cols-2 gap-6">
-                                <div className="grid grid-cols-6 gap-3">
-                                    {tables.map((table) => (
-                                        <button
-                                            key={table.id}
-                                            className={`aspect-square rounded-lg flex items-center justify-center text-white font-medium transition-colors ${getTableColor(
-                                                table.status
-                                            )}`}
-                                        >
-                                            {table.id}
-                                        </button>
-                                    ))}
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                <div className="lg:col-span-2">
+                                    {viewMode === 'floor' ? (
+                                        <TableFloorPlan 
+                                            tables={tables} 
+                                            onTableClick={handleTableClick}
+                                        />
+                                    ) : (
+                                        <TableListView 
+                                            tables={tables} 
+                                            onTableClick={handleTableClick}
+                                        />
+                                    )}
                                 </div>
 
                                 <div>
-                                    <div className="text-lg font-semibold mb-4">Quick Stats</div>
-                                    <div className="space-y-3">
-                                        <Card>
-                                            <CardContent className="p-4">
-                                                <div className="text-2xl font-bold">{stats.available}</div>
-                                                <div className="text-sm text-zinc-500">Available Tables</div>
-                                            </CardContent>
-                                        </Card>
-                                        <Card>
-                                            <CardContent className="p-4">
-                                                <div className="text-2xl font-bold">{stats.occupied}</div>
-                                                <div className="text-sm text-zinc-500">Occupied Tables</div>
-                                            </CardContent>
-                                        </Card>
-                                        <Card>
-                                            <CardContent className="p-4">
-                                                <div className="text-2xl font-bold">{stats.reserved}</div>
-                                                <div className="text-sm text-zinc-500">Reserved Tables</div>
-                                            </CardContent>
-                                        </Card>
-                                        <Card>
-                                            <CardContent className="p-4">
-                                                <div className="text-2xl font-bold">{stats.inactive}</div>
-                                                <div className="text-sm text-zinc-500">Inactive Tables</div>
-                                            </CardContent>
-                                        </Card>
-                                    </div>
+                                    <QuickStats tables={tables} />
                                 </div>
                             </div>
                         </CardContent>

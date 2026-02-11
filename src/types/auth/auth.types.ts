@@ -4,8 +4,8 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-    token: string;
-    user: User;
+    access_token: string;
+    data: User;
 }
 
 export interface User {

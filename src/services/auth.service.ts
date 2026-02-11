@@ -1,15 +1,19 @@
 import api from '@/lib/api';
 import { setToken, removeToken } from '@/lib/token';
+import { setUser, removeUser } from '@/lib/user';
 import { getErrorMessage } from '@/lib/error';
 import { LoginRequest, LoginResponse, User, ApiResponse } from '@/types/auth/auth.types';
 
 class AuthService {
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     try {
-      const response = await api.post<ApiResponse<LoginResponse>>('/login', credentials);
-      const { token } = response.data.data;
-      setToken(token);
-      return response.data.data;
+      const response = await api.post<LoginResponse>('/login', credentials);
+      const { access_token, data: user } = response.data;
+      
+      setToken(access_token);
+      setUser(user);
+      
+      return response.data;
     } catch (error: unknown) {
       const message = getErrorMessage(error, 'Login gagal');
       throw new Error(message);
@@ -20,8 +24,10 @@ class AuthService {
     try {
       await api.post('/logout');
       removeToken();
+      removeUser();
     } catch (error: unknown) {
       removeToken();
+      removeUser();
       const message = getErrorMessage(error, 'Logout gagal');
       throw new Error(message);
     }
