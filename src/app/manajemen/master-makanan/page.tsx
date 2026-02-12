@@ -11,7 +11,6 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { showSuccessToast, showErrorToast } from '@/lib/toast';
 import { useDebounce } from '@/hooks/useDebounce';
-import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select';
 
 export default function MasterMakananPage() {
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -24,7 +23,7 @@ export default function MasterMakananPage() {
 
     const debouncedSearch = useDebounce(search, 150);
 
-    const { data, isLoading, isFetching, error } = useFoods({ page, per_page: perPage, search: debouncedSearch });
+    const { data, isFetching, error } = useFoods({ page, per_page: perPage, search: debouncedSearch });
 
     const [isSearching, setIsSearching] = useState(false);
 
@@ -99,22 +98,10 @@ export default function MasterMakananPage() {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
                 <div className="bg-white p-4 rounded-lg border">
                     <div className="text-sm text-gray-500">Total Makanan</div>
                     <div className="text-2xl font-bold">{data?.meta?.total ?? data?.data.length ?? 0}</div>
-                </div>
-                <div className="bg-white p-4 rounded-lg border">
-                    <div className="text-sm text-gray-500">Tersedia</div>
-                    <div className="text-2xl font-bold text-green-600">
-                        {data?.data.filter((f) => f.is_available).length || 0}
-                    </div>
-                </div>
-                <div className="bg-white p-4 rounded-lg border">
-                    <div className="text-sm text-gray-500">Tidak Tersedia</div>
-                    <div className="text-2xl font-bold text-red-600">
-                        {data?.data.filter((f) => !f.is_available).length || 0}
-                    </div>
                 </div>
             </div>
 
