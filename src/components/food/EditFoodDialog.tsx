@@ -11,6 +11,7 @@ import FoodForm from './FoodForm';
 import { FoodFormValues } from '@/schema/food/food.schema';
 import { useUpdateFood } from '@/hooks/food/useFoods';
 import { Food } from '@/types/food/food.types';
+import { showSuccessToast, showErrorToast } from '@/lib/toast';
 
 interface EditFoodDialogProps {
     open: boolean;
@@ -38,11 +39,9 @@ export default function EditFoodDialog({ open, onOpenChange, food }: EditFoodDia
             });
             
             onOpenChange(false);
-            // Optional: Show success toast
-            console.log('Makanan berhasil diupdate');
+            showSuccessToast('Makanan berhasil diupdate');
         } catch (error) {
-            console.error('Error updating food:', error);
-            // Optional: Show error toast
+            showErrorToast(error);
         }
     };
 
