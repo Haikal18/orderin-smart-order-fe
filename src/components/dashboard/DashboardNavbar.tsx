@@ -21,6 +21,22 @@ export const DashboardNavbar = ({
     showSearch = true 
 }: DashboardNavbarProps) => {
     const { user, logout } = useAuth();
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => setMounted(true), []);
+
+    const handleLogout = async () => {
+        setIsLoggingOut(true);
+        try {
+            await logout();
+        } catch (err) {
+            console.error('Logout error:', err);
+        } finally {
+            setIsLoggingOut(false);
+        }
+    };
+
     const [showMobileSearch, setShowMobileSearch] = useState(false);
     const searchRef = useRef<HTMLDivElement | null>(null);
 
@@ -106,16 +122,17 @@ export const DashboardNavbar = ({
                     <div className="flex items-center gap-2 sm:hidden">
                         <button
                             aria-label="User menu"
-                            onClick={logout}
+                            onClick={handleLogout}
+                            disabled={mounted && isLoggingOut}
                             className="px-2 py-1 rounded-md bg-slate-100 dark:bg-zinc-900 text-sm"
                         >
-                            Logout
+                            {mounted && isLoggingOut ? 'Logging out...' : 'Logout'}
                         </button>
                     </div>
 
                     <div className="hidden sm:block">
-                      <Button variant="outline" onClick={logout} size="sm">
-                        Logout
+                      <Button variant="outline" onClick={handleLogout} size="sm" disabled={mounted && isLoggingOut}>
+                        {mounted && isLoggingOut ? 'Logging out...' : 'Logout'}
                       </Button>
                     </div>
                 </div>

@@ -285,13 +285,34 @@ export default function FoodTable({ data, onEdit, onDelete, serverPagination, se
                 </table>
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-3">
                 {serverPagination ? (
                     <>
-                        <div className="text-sm text-gray-700">
-                            Halaman {serverPagination.meta.page} dari {serverPagination.meta.last_page} —
-                            {` `}{serverPagination.meta.total} item
+                        <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                            <div className="text-sm text-gray-700">
+                                Halaman {serverPagination.meta.page} dari {serverPagination.meta.last_page} — {` `}{serverPagination.meta.total} item
+                            </div>
+
+                            {serverPagination.onPerPageChange && (
+                                <div className="flex items-center gap-3">
+                                    <label className="text-sm text-slate-600">Items per page</label>
+                                    <div className="w-28">
+                                        <Select value={String(serverPagination.meta.per_page)} onValueChange={(v) => serverPagination.onPerPageChange?.(Number(v))}>
+                                            <SelectTrigger>
+                                                <span className="px-2">{serverPagination.meta.per_page}</span>
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="10">10</SelectItem>
+                                                <SelectItem value="20">20</SelectItem>
+                                                <SelectItem value="50">50</SelectItem>
+                                                <SelectItem value="100">100</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+                            )}
                         </div>
+
                         <div className="flex gap-2">
                             <Button
                                 variant="outline"
@@ -310,33 +331,10 @@ export default function FoodTable({ data, onEdit, onDelete, serverPagination, se
                                 Next
                             </Button>
                         </div>
-
-                        {/* per-page control placed below the pagination text (requested) */}
-                        {serverPagination.onPerPageChange && (
-                            <div className="mt-3 flex items-center gap-3">
-                                <label className="text-sm text-slate-600">Items per page</label>
-                                <div className="w-28">
-                                    <Select value={String(serverPagination.meta.per_page)} onValueChange={(v) => serverPagination.onPerPageChange?.(Number(v))}>
-                                        <SelectTrigger>
-                                            <span className="px-2">{serverPagination.meta.per_page}</span>
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="10">10</SelectItem>
-                                            <SelectItem value="20">20</SelectItem>
-                                            <SelectItem value="50">50</SelectItem>
-                                            <SelectItem value="100">100</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-                        )}
                     </>
                 ) : (
                     <>
-                        <div className="text-sm text-gray-700">
-                            Halaman {table.getState().pagination.pageIndex + 1} dari{' '}
-                            {table.getPageCount()}
-                        </div>
+                        <div className="text-sm text-gray-700">Halaman {table.getState().pagination.pageIndex + 1} dari {table.getPageCount()}</div>
                         <div className="flex gap-2">
                             <Button
                                 variant="outline"

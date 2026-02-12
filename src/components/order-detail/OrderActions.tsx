@@ -42,10 +42,10 @@ export const OrderActions = ({ orderId, customerPayment, totalAmount }: OrderAct
 
     return (
         <>
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
                 <Button
                     variant="outline"
-                    className="flex-1"
+                    className="w-full sm:flex-1"
                     onClick={handleDownloadReceipt}
                     disabled={downloadMutation.isPending}
                 >
@@ -53,7 +53,7 @@ export const OrderActions = ({ orderId, customerPayment, totalAmount }: OrderAct
                     {downloadMutation.isPending ? 'Mengunduh...' : 'Generate Receipt'}
                 </Button>
                 <Button
-                    className="flex-1"
+                    className="w-full sm:flex-1"
                     onClick={handleOpenConfirm}
                     disabled={closeMutation.isPending || (parseFloat(customerPayment || '0') < totalAmount)}
                 >

@@ -49,8 +49,21 @@ pnpm start
 - ✅ Login button now shows a loading state while authentication is in progress.
 - ✅ Login forms disable inputs while submitting to prevent duplicate requests.
 - ✅ Dashboard navbar improved for small screens (compact user controls & responsive search width).
+- ✅ Logout button in the navbar now shows a loading state and is disabled while signing out.
 
 If you'd like the navbar behavior adjusted further (e.g. add profile dropdown, avatar), tell me what you prefer.
+
+### 📁 Pages & access (who needs to login)
+- Pages that require authentication (protected by `src/middleware.ts`):
+  - `/manajemen/*` — management area (dashboard, master-makanan, detail-order, etc.)
+  - `/orders/*` — order pages (order details)
+
+- Pages accessible to guests (no login required):
+  - `/` — public home / login page
+  - `/meja-tersedia` — meja tersedia (view available tables)
+  - Any other routes **not** under `/manajemen/*` or `/orders/*`
+
+> ⚠️ To change which routes require authentication, edit `src/middleware.ts` (the `matcher` array controls protected paths).
 
 ---
 
