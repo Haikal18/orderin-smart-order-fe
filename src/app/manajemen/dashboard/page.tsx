@@ -10,6 +10,7 @@ import { QuickStats } from '@/components/dashboard/QuickStats';
 import { useTables } from '@/hooks/meja-tersedia/useMeja';
 import { Table } from '@/types/meja-tersedia/meja.types';
 import { useNavbarSearch } from '@/context/navbarSearch';
+import { useOpenOrder } from '@/hooks/order/useOpenOrder';
 
 export default function DashboardPage() {
     // Use shared navbar search state from context
@@ -22,9 +23,13 @@ export default function DashboardPage() {
     const { data: tablesResponse, isLoading, isError, error } = useTables();
     const tables = tablesResponse?.data || [];
 
+    // Open order mutation
+    const openOrderMutation = useOpenOrder();
+
     const handleTableClick = (table: Table) => {
         console.log('Table clicked:', table);
 
+        openOrderMutation.mutate({ table_id: table.id });
     };
 
     if (isLoading) {

@@ -9,6 +9,7 @@ import EditFoodDialog from '@/components/food/EditFoodDialog';
 import DeleteFoodDialog from '@/components/food/DeleteFoodDialog';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import { showSuccessToast, showErrorToast } from '@/lib/toast';
 
 export default function MasterMakananPage() {
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -35,9 +36,9 @@ export default function MasterMakananPage() {
         if (idToDelete === null) return;
         try {
             await deleteMutation.mutateAsync(idToDelete);
-            console.log('Makanan berhasil dihapus');
+            showSuccessToast('Makanan berhasil dihapus');
         } catch (error) {
-            console.error('Error deleting food:', error);
+            showErrorToast(error);
         } finally {
             setDeleteDialogOpen(false);
             setIdToDelete(null);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, FormEvent, ChangeEvent } from 'react';
+import { useState, FormEvent, ChangeEvent, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,11 @@ export function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [localError, setLocalError] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -47,7 +52,7 @@ export function LoginForm() {
               placeholder="email@example.com"
               value={email}
               onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-              disabled={isLoading}
+              disabled={mounted && isLoading}
               required
             />
           </div>
@@ -60,7 +65,7 @@ export function LoginForm() {
               placeholder="••••••••"
               value={password}
               onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-              disabled={isLoading}
+              disabled={mounted && isLoading}
               required
             />
           </div>
@@ -71,8 +76,8 @@ export function LoginForm() {
             </div>
           )}
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? 'Sedang login...' : 'Login'}
+          <Button type="submit" className="w-full" disabled={mounted && isLoading}>
+            {mounted && isLoading ? 'Sedang login...' : 'Login'}
           </Button>
         </form>
       </CardContent>

@@ -51,6 +51,12 @@ export default function FoodForm({ onSubmit, defaultValues, isLoading }: FoodFor
     const isAvailable = watch('is_available') ?? true;
     const imageFile = watch('image');
 
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
     useEffect(() => {
         if (imageFile) {
             const url = URL.createObjectURL(imageFile);
@@ -162,8 +168,8 @@ export default function FoodForm({ onSubmit, defaultValues, isLoading }: FoodFor
                 <Label htmlFor="is_available">Tersedia</Label>
             </div>
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Menyimpan...' : 'Simpan'}
+            <Button type="submit" className="w-full" disabled={mounted && !!isLoading}>
+                {mounted && isLoading ? 'Menyimpan...' : 'Simpan'}
             </Button>
         </form>
     );

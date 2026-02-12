@@ -13,10 +13,16 @@ import { loginSchema, LoginFormData } from '@/schema/auth/login.schema';
 export default function LoginPage() {
   const router = useRouter();
   const { login, isLoading } = useAuth();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     removeToken();
   }, []);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const [formData, setFormData] = useState<LoginFormData>({ email: '', password: '' });
   const [errors, setErrors] = useState<Partial<Record<keyof LoginFormData, string>>>({});
   const [apiError, setApiError] = useState<string | null>(null);
@@ -76,7 +82,7 @@ export default function LoginPage() {
                   placeholder="kasir@orderin.com"
                   value={formData.email}
                   onChange={handleChange}
-                  disabled={isLoading}
+                  disabled={mounted && isLoading}
                 />
                 {errors.email && (
                   <p className="text-sm text-destructive">{errors.email}</p>
@@ -92,7 +98,7 @@ export default function LoginPage() {
                   placeholder="••••••••"
                   value={formData.password}
                   onChange={handleChange}
-                  disabled={isLoading}
+                  disabled={mounted && isLoading}
                 />
                 {errors.password && (
                   <p className="text-sm text-destructive">{errors.password}</p>
@@ -105,8 +111,8 @@ export default function LoginPage() {
                 </div>
               )}
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Sedang login...' : 'Login'}
+              <Button type="submit" className="w-full" disabled={mounted && isLoading}>
+                {mounted && isLoading ? 'Sedang login...' : 'Login'}
               </Button>
             </form>
           </CardContent>

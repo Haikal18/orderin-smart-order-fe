@@ -1,11 +1,17 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export function UserProfile() {
   const { user, logout, isLoading } = useAuth();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -47,9 +53,9 @@ export function UserProfile() {
           onClick={handleLogout}
           variant="destructive"
           className="w-full"
-          disabled={isLoading}
+          disabled={mounted && isLoading}
         >
-          {isLoading ? 'Logging out...' : 'Logout'}
+          {mounted && isLoading ? 'Logging out...' : 'Logout'}
         </Button>
       </CardContent>
     </Card>

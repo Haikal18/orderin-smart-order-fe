@@ -21,6 +21,11 @@ import { useState } from 'react';
 
 export default function DeleteFoodDialog({ open, onOpenChange, onConfirm, itemName }: DeleteFoodDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (open) {
@@ -56,9 +61,9 @@ export default function DeleteFoodDialog({ open, onOpenChange, onConfirm, itemNa
         </DialogHeader>
 
         <div className="mt-4 flex justify-end gap-2">
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>Batal</Button>
-          <Button variant="destructive" onClick={handleConfirm} disabled={isLoading}>
-            {isLoading ? 'Menghapus...' : 'Hapus'}
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={mounted && isLoading}>Batal</Button>
+          <Button variant="destructive" onClick={handleConfirm} disabled={mounted && isLoading}>
+            {mounted && isLoading ? 'Menghapus...' : 'Hapus'}
           </Button>
         </div>
       </DialogContent>
