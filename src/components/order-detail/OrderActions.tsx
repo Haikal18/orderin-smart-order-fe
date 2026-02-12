@@ -5,7 +5,7 @@ import { FileText, CheckCircle } from 'lucide-react';
 import { useDownloadReceipt } from '@/hooks/order/useDownloadReceipt';
 import { useCloseOrderDetail } from '@/hooks/order/useCloseOrderDetail';
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 
 import { showErrorToast } from '@/lib/toast';
 
@@ -62,27 +62,27 @@ export const OrderActions = ({ orderId, customerPayment, totalAmount }: OrderAct
                 </Button>
             </div>
 
-            {/* Confirmation dialog */}
-            <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-                <DialogContent className="max-w-md">
-                    <DialogHeader>
-                        <DialogTitle>Konfirmasi Tutup Order</DialogTitle>
-                        <DialogDescription>Anda akan menutup order ini.</DialogDescription>
+            {/* Confirmation dialog (reusable) */}
+            <ConfirmDialog
+                open={confirmOpen}
+                onOpenChange={setConfirmOpen}
+                title="Konfirmasi Tutup Order"
+                description={
+                    <>
+                        Anda akan menutup order ini.
                         <div className="mt-2 text-sm text-zinc-600">
                             Total: <strong>Rp{totalAmount.toLocaleString()}</strong>
                             <br />
                             Pembayaran pelanggan: <strong>Rp{(parseFloat(customerPayment || '0')).toLocaleString()}</strong>
                         </div>
-                    </DialogHeader>
-
-                    <div className="mt-4 flex justify-end gap-2">
-                        <Button variant="outline" onClick={() => setConfirmOpen(false)} disabled={closeMutation.isPending}>Batal</Button>
-                        <Button variant="destructive" onClick={handleConfirmClose} disabled={closeMutation.isPending}>
-                            {closeMutation.isPending ? 'Menutup...' : 'Tutup Order'}
-                        </Button>
-                    </div>
-                </DialogContent>
-            </Dialog>
+                    </>
+                }
+                confirmLabel="Tutup Order"
+                cancelLabel="Batal"
+                onConfirm={handleConfirmClose}
+                isLoading={closeMutation.isPending}
+                destructive
+            />
         </>
     );
 };

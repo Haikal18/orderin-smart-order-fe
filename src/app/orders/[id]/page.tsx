@@ -1,12 +1,11 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Search } from 'lucide-react';
 import { 
     useOrderDetail, 
     useAddOrderItem,
-    useSendDraftItems,
 } from '@/hooks/order/useOrderItems';
 import { useFoods } from '@/hooks/food/useFoods';
 import { Button } from '@/components/ui/button';
@@ -14,7 +13,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import MenuItemCard from '@/components/orders/MenuItemCard';
 import CategoryTabs from '@/components/orders/CategoryTabs';
-import CartItem from '@/components/orders/CartItem';
 import LocalDraftCartItem from '@/components/orders/LocalDraftCartItem';
 import { FoodCategory } from '@/types/food/food.types';
 import { OrderItem } from '@/types/order/order.types';
@@ -38,15 +36,14 @@ export default function OrderDetailPage() {
     const [activeCategory, setActiveCategory] = useState<FoodCategory | 'all'>('all');
     const [localDrafts, setLocalDrafts] = useState<LocalDraftItem[]>([]);
 
-    const { data, isLoading, isError, error, refetch } = useOrderDetail(orderId);
-    const order = data?.data;
+    const { data: orderResp, isLoading, isError, error, refetch } = useOrderDetail(orderId);
+    const order = orderResp?.data;
     
     const { data: foodsData, isLoading: isLoadingFoods } = useFoods({ is_available: true });
-    const foods = foodsData?.data || [];
+    const foods = useMemo(() => foodsData?.data || [], [foodsData]);
 
 
     const addItemMutation = useAddOrderItem(orderId);
-    const sendDraftsMutation = useSendDraftItems(orderId);
 
 
     const filteredFoods = useMemo(() => {
@@ -157,10 +154,10 @@ export default function OrderDetailPage() {
         );
     }
 
-    const allItems = order.items || [];
-    const sentItems = allItems.filter((item: any) => item.status === 'sent');
+    const allItems: OrderItem[] = order.items || [];
+    const sentItems = allItems.filter((item: OrderItem) => item.status === 'sent');
     
-    const sentTotal = sentItems.reduce((sum: number, item: any) => sum + parseFloat(String(item.subtotal)), 0);
+    const sentTotal = sentItems.reduce((sum: number, item: OrderItem) => sum + parseFloat(String(item.subtotal)), 0);
     const localDraftTotal = localDrafts.reduce((sum, item) => sum + item.subtotal, 0);
     
     const apiTotalAmount = parseFloat(String(order.summary?.total_amount || 0));
