@@ -127,7 +127,7 @@ export default function OrderDetailPage() {
         }));
 
         addItemMutation.mutate(
-            { items },
+            { items, send_now: true },
             {
                 onSuccess: () => {
 
@@ -158,11 +158,13 @@ export default function OrderDetailPage() {
     }
 
     const allItems = order.items || [];
-    const sentItems = allItems.filter(item => item.status === 'sent');
+    const sentItems = allItems.filter((item: any) => item.status === 'sent');
     
-    const sentTotal = sentItems.reduce((sum, item) => sum + item.subtotal, 0);
+    const sentTotal = sentItems.reduce((sum: number, item: any) => sum + parseFloat(String(item.subtotal)), 0);
     const localDraftTotal = localDrafts.reduce((sum, item) => sum + item.subtotal, 0);
-    const grandTotal = sentTotal + localDraftTotal;
+    
+    const apiTotalAmount = parseFloat(String(order.summary?.total_amount || 0));
+    const grandTotal = apiTotalAmount + localDraftTotal;
     
     const hasLocalDrafts = localDrafts.length > 0;
 
@@ -262,7 +264,7 @@ export default function OrderDetailPage() {
                                                         <p className="text-xs text-gray-500">Qty: {item.qty}</p>
                                                     </div>
                                                     <p className="font-semibold">
-                                                        Rp {item.subtotal.toLocaleString('id-ID')}
+                                                        Rp {parseFloat(String(item.subtotal)).toLocaleString('id-ID')}
                                                     </p>
                                                 </div>
                                             ))}
