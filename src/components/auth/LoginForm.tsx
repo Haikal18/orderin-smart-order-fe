@@ -13,6 +13,7 @@ export function LoginForm() {
   const [password, setPassword] = useState('');
   const [localError, setLocalError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -27,10 +28,13 @@ export function LoginForm() {
       return;
     }
 
+    setSubmitting(true);
     try {
       await login({ email, password });
     } catch (err: unknown) {
       setLocalError(err instanceof Error ? err.message : 'Login gagal');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -78,9 +82,9 @@ export function LoginForm() {
             </div>
           )}
 
-          <Button type="submit" className="w-full" disabled={mounted && isLoading}>
-            {mounted && isLoading ? 'Sedang login...' : 'Login'}
-          </Button>
+            <Button type="submit" className="w-full" disabled={mounted && (isLoading || submitting)}>
+              {mounted && (isLoading || submitting) ? 'Sedang login...' : 'Login'}
+            </Button>
         </form>
       </CardContent>
     </Card>

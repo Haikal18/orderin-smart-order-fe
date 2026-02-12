@@ -48,7 +48,7 @@ export const DashboardNavbar = ({
 
     return (
         <header className="sticky top-0 z-40 backdrop-blur-sm bg-white/90 dark:bg-zinc-950/90 border-b shadow-sm px-4 md:px-6 py-3 md:py-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-3 md:gap-4">
                     <SidebarTrigger />
 
@@ -65,7 +65,7 @@ export const DashboardNavbar = ({
                                     placeholder="Search table..."
                                     value={localInput}
                                     onChange={(e) => setLocalInput(e.target.value)}
-                                    className="w-64"
+                                    className="w-40 md:w-64"
                                 />
                             </div>
 
@@ -96,13 +96,28 @@ export const DashboardNavbar = ({
                 </div> 
 
                 <div className="flex items-center gap-3">
-                    <div className="text-sm flex flex-col items-end">
+                    {/* compact user info on xs */}
+                    <div className="hidden sm:flex text-sm flex-col items-end">
                         <div className="font-medium max-w-[140px] truncate">{user?.name || 'User'}</div>
                         <div className="text-zinc-500 hidden sm:block">{user?.role || 'Staff'}</div>
                     </div>
-                    <Button variant="outline" onClick={logout} size="sm">
+
+                    {/* small screen: show compact user button */}
+                    <div className="flex items-center gap-2 sm:hidden">
+                        <button
+                            aria-label="User menu"
+                            onClick={logout}
+                            className="px-2 py-1 rounded-md bg-slate-100 dark:bg-zinc-900 text-sm"
+                        >
+                            Logout
+                        </button>
+                    </div>
+
+                    <div className="hidden sm:block">
+                      <Button variant="outline" onClick={logout} size="sm">
                         Logout
-                    </Button>
+                      </Button>
+                    </div>
                 </div>
             </div>
         </header>

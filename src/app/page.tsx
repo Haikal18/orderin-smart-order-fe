@@ -14,6 +14,7 @@ export default function LoginPage() {
   const router = useRouter();
   const { login, isLoading } = useAuth();
   const [mounted, setMounted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     removeToken();
@@ -54,10 +55,13 @@ export default function LoginPage() {
     }
 
     try {
+      setSubmitting(true);
       await login(result.data);
       router.push('/manajemen/dashboard');
     } catch (err: unknown) {
       setApiError(err instanceof Error ? err.message : 'Login gagal');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -111,8 +115,8 @@ export default function LoginPage() {
                 </div>
               )}
 
-              <Button type="submit" className="w-full" disabled={mounted && isLoading}>
-                {mounted && isLoading ? 'Sedang login...' : 'Login'}
+              <Button type="submit" className="w-full" disabled={mounted && (isLoading || submitting)}>
+                {mounted && (isLoading || submitting) ? 'Sedang login...' : 'Login'}
               </Button>
             </form>
           </CardContent>

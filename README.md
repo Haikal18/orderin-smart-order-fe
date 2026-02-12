@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# OrderIn — SmartOrder (Frontend)
 
-## Getting Started
+Frontend for OrderIn SmartOrder built with Next.js + Tailwind.
 
-First, run the development server:
+Live demo: https://orderin-smart-order-fe.vercel.app/
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ✅ Demo access (test accounts)
+- Email: `pelayan@orderin.com` — Password: `(password)`
+- Email: `pelayan2@orderin.com` — Password: `(password)`
+- Email: `kasir@orderin.com` — Password: `(password)`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+> Gunakan akun di atas untuk mencoba fitur utama (pesanan, pembayaran, dll.) pada demo.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🚀 Local setup (frontend)
+1. Clone repository
 
-To learn more about Next.js, take a look at the following resources:
+   git clone <repo-url>
+   cd orderin-smartorder-fe
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. Install dependencies
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   pnpm install
 
-## Deploy on Vercel
+3. (Optional) Set API base URL
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   - Default: `http://127.0.0.1:8000/api/v1`
+   - To override: set `NEXT_PUBLIC_API_URL` in your environment
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+4. Run development server
+
+   pnpm dev
+
+   Open http://localhost:3000
+
+---
+
+## 🔧 Build / Production
+
+pnpm build
+pnpm start
+
+---
+
+## 📌 Important notes (what I changed)
+- ✅ Login button now shows a loading state while authentication is in progress.
+- ✅ Login forms disable inputs while submitting to prevent duplicate requests.
+- ✅ Dashboard navbar improved for small screens (compact user controls & responsive search width).
+
+If you'd like the navbar behavior adjusted further (e.g. add profile dropdown, avatar), tell me what you prefer.
+
+---
+
+## 🛠 Environment & troubleshooting
+- API base URL: `NEXT_PUBLIC_API_URL` (fallback to `http://127.0.0.1:8000/api/v1`)
+- If login fails, check browser console / network tab for API errors.
+
+---
+
+## 📚 Resources
+- Next.js: https://nextjs.org
+- Tailwind CSS: https://tailwindcss.com
+
+---
