@@ -12,35 +12,32 @@ import {
     Food,
 } from '@/types/food/food.types';
 
-/**
- * Hook to fetch foods with filters
- */
+
 export const useFoods = (filters?: FoodFilters) => {
     return useQuery<FoodsResponse>({
         queryKey: ['foods', filters],
         queryFn: () => fetchFoods(filters),
+        staleTime: 60_000,
     });
 };
 
-/**
- * Hook to create food with optimistic update
- */
+
 export const useCreateFood = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
         mutationFn: createFood,
         onMutate: async (newFood) => {
-            // Cancel outgoing refetches
+         
             await queryClient.cancelQueries({ queryKey: ['foods'] });
 
-            // Snapshot previous value
+          
             const previousFoods = queryClient.getQueryData<FoodsResponse>(['foods']);
 
-            // Optimistically update to new value
+   
             if (previousFoods) {
                 const optimisticFood: Food = {
-                    id: Date.now(), // Temporary ID
+                    id: Date.now(), 
                     name: newFood.name,
                     category: newFood.category,
                     price: newFood.price.toString(),
@@ -61,21 +58,19 @@ export const useCreateFood = () => {
             return { previousFoods };
         },
         onError: (err, newFood, context) => {
-            // Rollback on error
+
             if (context?.previousFoods) {
                 queryClient.setQueryData(['foods'], context.previousFoods);
             }
         },
         onSettled: () => {
-            // Refetch after error or success
+        
             queryClient.invalidateQueries({ queryKey: ['foods'] });
         },
     });
 };
 
-/**
- * Hook to update food with optimistic update
- */
+
 export const useUpdateFood = () => {
     const queryClient = useQueryClient();
 
@@ -83,13 +78,13 @@ export const useUpdateFood = () => {
         mutationFn: ({ id, input }: { id: number; input: UpdateFoodInput }) =>
             updateFood(id, input),
         onMutate: async ({ id, input }) => {
-            // Cancel outgoing refetches
+           
             await queryClient.cancelQueries({ queryKey: ['foods'] });
 
-            // Snapshot previous value
+
             const previousFoods = queryClient.getQueryData<FoodsResponse>(['foods']);
 
-            // Optimistically update
+
             if (previousFoods) {
                 queryClient.setQueryData<FoodsResponse>(['foods'], {
                     ...previousFoods,
@@ -119,34 +114,31 @@ export const useUpdateFood = () => {
             return { previousFoods };
         },
         onError: (err, variables, context) => {
-            // Rollback on error
+
             if (context?.previousFoods) {
                 queryClient.setQueryData(['foods'], context.previousFoods);
             }
         },
         onSettled: () => {
-            // Refetch after error or success
+
             queryClient.invalidateQueries({ queryKey: ['foods'] });
         },
     });
 };
 
-/**
- * Hook to delete food with optimistic update
- */
 export const useDeleteFood = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
         mutationFn: deleteFood,
         onMutate: async (id) => {
-            // Cancel outgoing refetches
+       
             await queryClient.cancelQueries({ queryKey: ['foods'] });
 
-            // Snapshot previous value
+    
             const previousFoods = queryClient.getQueryData<FoodsResponse>(['foods']);
 
-            // Optimistically remove from list
+         
             if (previousFoods) {
                 queryClient.setQueryData<FoodsResponse>(['foods'], {
                     ...previousFoods,
@@ -157,13 +149,13 @@ export const useDeleteFood = () => {
             return { previousFoods };
         },
         onError: (err, id, context) => {
-            // Rollback on error
+
             if (context?.previousFoods) {
                 queryClient.setQueryData(['foods'], context.previousFoods);
             }
         },
         onSettled: () => {
-            // Refetch after error or success
+
             queryClient.invalidateQueries({ queryKey: ['foods'] });
         },
     });

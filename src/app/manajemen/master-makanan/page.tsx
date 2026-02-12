@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useFoods, useDeleteFood } from '@/hooks/food/useFoods';
 import { Food } from '@/types/food/food.types';
 import FoodTable from '@/components/food/FoodTable';
@@ -10,13 +10,32 @@ import DeleteFoodDialog from '@/components/food/DeleteFoodDialog';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { showSuccessToast, showErrorToast } from '@/lib/toast';
+import { useDebounce } from '@/hooks/useDebounce';
+import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select';
 
 export default function MasterMakananPage() {
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
     const [editDialogOpen, setEditDialogOpen] = useState(false);
     const [selectedFood, setSelectedFood] = useState<Food | null>(null);
 
-    const { data, isLoading, error } = useFoods();
+    const [page, setPage] = useState<number>(1);
+    const [perPage, setPerPage] = useState<number>(10);
+    const [search, setSearch] = useState<string>('');
+
+    const debouncedSearch = useDebounce(search, 150);
+
+    const { data, isLoading, isFetching, error } = useFoods({ page, per_page: perPage, search: debouncedSearch });
+
+    const [isSearching, setIsSearching] = useState(false);
+
+    useEffect(() => {
+        if (debouncedSearch !== '') setIsSearching(true);
+        else setIsSearching(false);
+    }, [debouncedSearch]);
+
+    useEffect(() => {
+        if (!isFetching) setIsSearching(false);
+    }, [isFetching]);
     const deleteMutation = useDeleteFood();
 
     const handleEdit = (food: Food) => {
@@ -44,16 +63,6 @@ export default function MasterMakananPage() {
             setIdToDelete(null);
         }
     };
-
-    if (isLoading) {
-        return (
-            <div className="p-6">
-                <div className="flex items-center justify-center h-64">
-                    <div className="text-gray-500">Memuat data...</div>
-                </div>
-            </div>
-        );
-    }
 
     if (error) {
         return (
@@ -83,11 +92,17 @@ export default function MasterMakananPage() {
                 </Button>
             </div>
 
+            <div className="flex items-center justify-between mt-4 gap-4">
+                <div />
+                <div className="flex-1 max-w-sm">
+                </div>
+            </div>
+
             {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-white p-4 rounded-lg border">
                     <div className="text-sm text-gray-500">Total Makanan</div>
-                    <div className="text-2xl font-bold">{data?.data.length || 0}</div>
+                    <div className="text-2xl font-bold">{data?.meta?.total ?? data?.data.length ?? 0}</div>
                 </div>
                 <div className="bg-white p-4 rounded-lg border">
                     <div className="text-sm text-gray-500">Tersedia</div>
@@ -109,6 +124,18 @@ export default function MasterMakananPage() {
                     data={data?.data || []}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
+                    isFetching={isFetching}
+                    serverSearch={{ value: search, onChange: (v) => { setSearch(v); setPage(1); }, isLoading: isSearching }}
+                    serverPagination={data?.meta ? {
+                        meta: {
+                            page: data.meta.current_page,
+                            per_page: data.meta.per_page,
+                            last_page: data.meta.last_page,
+                            total: data.meta.total,
+                        },
+                        onServerPageChange: (p: number) => setPage(p),
+                        onPerPageChange: (pp: number) => { setPerPage(pp); setPage(1); }
+                    } : undefined}
                 />
             </div>
 

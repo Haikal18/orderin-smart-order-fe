@@ -3,9 +3,13 @@
 import { useTables } from "@/hooks/meja-tersedia/useMeja";
 import { TableCard } from "@/components/meja-tersedia/table-card";
 import { StatusLegend } from "@/components/meja-tersedia/status-legend";
+import { useNavbarSearch } from '@/context/navbarSearch';
 
 export default function MejaTersediaPage() {
-    const { data: tablesResponse, isLoading, isError, error } = useTables();
+    const navbarSearch = useNavbarSearch();
+    const searchQuery = navbarSearch?.searchQuery ?? '';
+
+    const { data: tablesResponse, isLoading, isError, error } = useTables({ search: searchQuery });
 
     if (isLoading) {
         return (
