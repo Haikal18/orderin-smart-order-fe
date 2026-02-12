@@ -34,6 +34,8 @@ export function LoginForm() {
     }
   };
 
+  const displayError: string | null = localError ?? (error instanceof Error ? error.message : (typeof error === 'string' ? error : null));
+
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
@@ -70,9 +72,9 @@ export function LoginForm() {
             />
           </div>
 
-          {(localError || error) && (
+          {displayError && (
             <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive">
-              {localError || error}
+              {displayError}
             </div>
           )}
 

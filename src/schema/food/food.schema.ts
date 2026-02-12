@@ -6,11 +6,9 @@ const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/web
 export const foodFormSchema = z.object({
     name: z.string().min(1, 'Nama makanan wajib diisi'),
     price: z
-        .number({ invalid_type_error: 'Harga harus berupa angka' })
+        .number()
         .positive('Harga harus lebih dari 0'),
-    category: z.enum(['food', 'beverage', 'dessert'], {
-        required_error: 'Kategori wajib dipilih',
-    }),
+    category: z.enum(['food', 'beverage', 'dessert'] as const),
     is_available: z.boolean(),
     description: z.string().optional(),
     image: z

@@ -1,7 +1,6 @@
 'use client';
 
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm, Controller, Resolver } from 'react-hook-form';
 import { foodFormSchema, FoodFormValues } from '@/schema/food/food.schema';
 import { FoodCategory } from '@/types/food/food.types';
 import { Button } from '@/components/ui/button';
@@ -38,7 +37,20 @@ export default function FoodForm({ onSubmit, defaultValues, isLoading }: FoodFor
         control,
         formState: { errors },
     } = useForm<FoodFormValues>({
-        resolver: zodResolver(foodFormSchema),
+        resolver: (async (values) => {
+            const result = foodFormSchema.safeParse(values);
+            if (result.success) {
+                return { values: result.data, errors: {} };
+            }
+
+            const errors = result.error.issues.reduce((acc: any, err) => {
+                const key = err.path[0] ?? '_';
+                acc[key] = { type: err.code ?? 'validation', message: err.message };
+                return acc;
+            }, {} as Record<string, any>);
+
+            return { values: {} as any, errors };
+        }) as Resolver<FoodFormValues, any>,
         defaultValues: {
             name: defaultValues?.name || '',
             price: defaultValues?.price ? parseFloat(defaultValues.price) : undefined,

@@ -7,7 +7,7 @@ import {
     deleteOrderItem,
 } from '@/services/order/order.service';
 import {
-    OrderDetailResponse,
+    OrderCurrentResponse,
     AddOrderItemInput,
     AddOrderItemResponse,
     SendDraftItemsResponse,
@@ -16,7 +16,7 @@ import { showSuccessToast, showErrorToast } from '@/lib/toast';
 
 
 export const useOrderDetail = (orderId: number) => {
-    return useQuery<OrderDetailResponse>({
+    return useQuery<OrderCurrentResponse>({
         queryKey: ['order', orderId],
         queryFn: () => fetchOrderDetail(orderId),
         enabled: !!orderId,
