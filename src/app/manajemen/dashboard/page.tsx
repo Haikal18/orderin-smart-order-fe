@@ -20,7 +20,7 @@ export default function DashboardPage() {
 
     const [viewMode, setViewMode] = useState<'floor' | 'list'>('floor');
 
-    const { data: tablesResponse, isLoading, isError, error } = useTables();
+    const { data: tablesResponse, isLoading, isError, error } = useTables({ search: searchQuery });
     const tables = tablesResponse?.data || [];
 
   

@@ -19,6 +19,12 @@ export const fetchFoods = async (filters?: FoodFilters): Promise<FoodsResponse> 
     if (filters?.search) {
         params.append('search', filters.search);
     }
+    if (filters?.per_page !== undefined) {
+        params.append('per_page', String(filters.per_page));
+    }
+    if (filters?.page !== undefined) {
+        params.append('page', String(filters.page));
+    }
 
     const response = await api.get(`/foods${params.toString() ? `?${params.toString()}` : ''}`);
     return response.data;

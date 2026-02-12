@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useNavbarSearch } from '@/context/navbarSearch';
+import { useDebounce } from '@/hooks/useDebounce';
 
 interface DashboardNavbarProps {
     searchQuery?: string;
@@ -26,6 +27,14 @@ export const DashboardNavbar = ({
     const navbarSearch = useNavbarSearch();
     const resolvedSearchQuery = searchQuery ?? navbarSearch?.searchQuery ?? '';
     const resolvedOnSearchChange = onSearchChange ?? navbarSearch?.setSearchQuery;
+
+    // local input with debounce to avoid updating global/context on every keystroke
+    const [localInput, setLocalInput] = useState<string>(resolvedSearchQuery);
+    useEffect(() => setLocalInput(resolvedSearchQuery), [resolvedSearchQuery]);
+    const debounced = useDebounce(localInput, 300);
+    useEffect(() => {
+        if (resolvedOnSearchChange) resolvedOnSearchChange(debounced);
+    }, [debounced, resolvedOnSearchChange]);
 
     useEffect(() => {
         const onClick = (e: MouseEvent) => {
@@ -54,8 +63,8 @@ export const DashboardNavbar = ({
                                 <Input
                                     type="search"
                                     placeholder="Search table..."
-                                    value={resolvedSearchQuery}
-                                    onChange={(e) => resolvedOnSearchChange(e.target.value)}
+                                    value={localInput}
+                                    onChange={(e) => setLocalInput(e.target.value)}
                                     className="w-64"
                                 />
                             </div>
@@ -75,8 +84,8 @@ export const DashboardNavbar = ({
                                         <Input
                                             type="search"
                                             placeholder="Search table..."
-                                            value={resolvedSearchQuery}
-                                            onChange={(e) => resolvedOnSearchChange(e.target.value)}
+                                            value={localInput}
+                                            onChange={(e) => setLocalInput(e.target.value)}
                                             className="w-full"
                                         />
                                     </div>

@@ -13,9 +13,17 @@ export interface Food {
     updated_at: string;
 }
 
+export interface PaginationMeta {
+    current_page: number;
+    per_page: number;
+    last_page: number;
+    total: number;
+}
+
 export interface FoodsResponse {
     status: string;
     data: Food[];
+    meta?: PaginationMeta; 
 }
 
 export interface FoodResponse {
@@ -46,4 +54,6 @@ export interface FoodFilters {
     category?: FoodCategory;
     is_available?: boolean;
     search?: string;
+    per_page?: number;
+    page?: number;
 }
