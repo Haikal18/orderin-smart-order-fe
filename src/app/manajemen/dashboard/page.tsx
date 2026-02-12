@@ -13,7 +13,7 @@ import { useNavbarSearch } from '@/context/navbarSearch';
 import { useOpenOrder } from '@/hooks/order/useOpenOrder';
 
 export default function DashboardPage() {
-    // Use shared navbar search state from context
+
     const navbarSearch = useNavbarSearch();
     const searchQuery = navbarSearch?.searchQuery ?? '';
     const setSearchQuery = navbarSearch?.setSearchQuery ?? (() => {});
@@ -23,7 +23,7 @@ export default function DashboardPage() {
     const { data: tablesResponse, isLoading, isError, error } = useTables();
     const tables = tablesResponse?.data || [];
 
-    // Open order mutation
+  
     const openOrderMutation = useOpenOrder();
 
     const handleTableClick = (table: Table) => {

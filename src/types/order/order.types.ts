@@ -101,7 +101,7 @@ export interface SendDraftItemsResponse {
 }
 
 
-export interface OrderDetailResponse {
+export interface OrderCurrentResponse {
     status: string;
     message: string;
     data: Order;
@@ -111,4 +111,97 @@ export interface OrderDetailResponse {
 export interface OrdersResponse {
     status: string;
     data: Order[];
+}
+
+export interface OrderListItem {
+    id: number;
+    table_number: number;
+    total_price: number;
+    status: OrderStatus;
+    opened_at: string;
+    closed_at: string | null;
+}
+
+export interface PaginationMeta {
+    current_page: number;
+    per_page: number;
+    total: number;
+    last_page: number;
+    from: number;
+    to: number;
+}
+
+export interface PaginationLinks {
+    first: string;
+    last: string;
+    prev: string | null;
+    next: string | null;
+}
+
+export interface OrderListResponse {
+    status: string;
+    message: string;
+    data: OrderListItem[];
+    meta: PaginationMeta;
+    links: PaginationLinks;
+}
+
+export interface OrderDetailItem {
+    id: number;
+    food_id: number;
+    food_name: string;
+    category: string;
+    image_url: string | null;
+    quantity: number;
+    price: number;
+    subtotal: number;
+    notes: string | null;
+    status: OrderItemStatus;
+    sent_at: string | null;
+}
+
+export interface OrderDetailTable {
+    id: number;
+    table_number: number;
+    capacity: number;
+    status: string;
+}
+
+export interface OrderDetailPelayan {
+    id: number;
+    name: string;
+}
+
+export interface OrderDetail {
+    id: number;
+    order_number: string;
+    status: OrderStatus;
+    total_amount: number;
+    opened_at: string;
+    closed_at: string | null;
+    table: OrderDetailTable;
+    pelayan: OrderDetailPelayan;
+    items: OrderDetailItem[];
+}
+
+export interface OrderDetailResponse {
+    status: string;
+    message: string;
+    data: OrderDetail;
+}
+
+export interface CloseOrderResponse {
+    status: string;
+    message: string;
+    data: OrderDetail;
+}
+
+export interface CloseOrderError {
+    status: string;
+    message: string;
+    draft_count?: number;
+    draft_items?: Array<{
+        food_name: string;
+        qty: number;
+    }>;
 }

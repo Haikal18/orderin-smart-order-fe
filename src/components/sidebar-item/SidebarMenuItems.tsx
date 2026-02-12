@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Home, UtensilsCrossed, Users } from 'lucide-react';
+import { LayoutDashboard, Home, UtensilsCrossed, Users, Receipt } from 'lucide-react';
 import {
   SidebarMenu,
   SidebarMenuItem,
@@ -15,6 +15,7 @@ export default function SidebarMenuItems() {
   const items = [
     { href: '/manajemen/dashboard', label: 'Dashboard', Icon: LayoutDashboard },
     { href: '/meja-tersedia', label: 'Meja Tersedia', Icon: Home },
+    { href: '/manajemen/detail-order', label: 'Detail Order', Icon: Receipt },
     { href: '/manajemen/master-makanan', label: 'Master Makanan', Icon: UtensilsCrossed },
   ];
 

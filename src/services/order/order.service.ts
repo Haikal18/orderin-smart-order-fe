@@ -5,8 +5,11 @@ import {
     AddOrderItemInput,
     AddOrderItemResponse,
     SendDraftItemsResponse,
-    OrderDetailResponse,
+    OrderCurrentResponse,
     OrdersResponse,
+    OrderListResponse,
+    OrderDetail,
+    CloseOrderResponse,
 } from '@/types/order/order.types';
 
 export const openOrder = async (input: OpenOrderInput): Promise<OpenOrderResponse> => {
@@ -30,7 +33,7 @@ export const sendDraftItems = async (orderId: number): Promise<SendDraftItemsRes
 };
 
 
-export const fetchOrderDetail = async (orderId: number): Promise<OrderDetailResponse> => {
+export const fetchOrderDetail = async (orderId: number): Promise<OrderCurrentResponse> => {
     const response = await api.get(`/orders/${orderId}`);
     return response.data;
 };
@@ -63,7 +66,35 @@ export const deleteOrderItem = async (
 
 export const closeOrder = async (
     orderId: number
-): Promise<OrderDetailResponse> => {
+): Promise<OrderCurrentResponse> => {
     const response = await api.post(`/orders/${orderId}/close`);
+    return response.data;
+};
+
+// Order Management Services (untuk si kasir)
+export const getOrders = async (status?: string, page?: number): Promise<OrderListResponse> => {
+    const params = new URLSearchParams();
+    if (status) params.append('status', status);
+    if (page) params.append('page', page.toString());
+    
+    const response = await api.get(`/orders?${params.toString()}`);
+    return response.data;
+};
+
+export const getOrderDetail = async (id: number): Promise<OrderDetail> => {
+    const response = await api.get(`/orders/${id}`);
+    return response.data.data;
+};
+
+export const closeOrderDetail = async (payload: { id: number; cash: number }): Promise<CloseOrderResponse> => {
+    const { id, cash } = payload;
+    const response = await api.post(`/orders/${id}/close`, { cash });
+    return response.data;
+};
+
+export const downloadOrderReceipt = async (id: number): Promise<Blob> => {
+    const response = await api.get(`/orders/${id}/receipt`, {
+        responseType: 'blob'
+    });
     return response.data;
 };
